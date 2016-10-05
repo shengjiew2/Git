@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿//I HAVE CHANGED THIS AND RE UPLOADED TO CHECK
+
+
+using UnityEngine;
 using System.Collections;
 
 public class GameLogicScript : MonoBehaviour {
