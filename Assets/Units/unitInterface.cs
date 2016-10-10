@@ -5,8 +5,13 @@ public class unitInterface : MonoBehaviour {
 
 
     //how this interacts with the board/pebbles will be done later, but works for now.
-    Stone CurrentPebble;
+    public Stone currStone;
+    
     bouncyController control;
+    public int id; //will be 0-4 and intruct which position is the home row
+    public int status; //HOME = 0, FEILD = 1; TARGET = 2;
+    public int player;
+    public int highlight; // 0 is normal, 1 highlight1, ect. 
 
     // Use this for initialization
     void Start()
@@ -18,6 +23,8 @@ public class unitInterface : MonoBehaviour {
     public void setUp()
     {
         control = this.GetComponent<bouncyController>();
+        highlight = 0;
+        status = 0;
     }
 
     
@@ -49,17 +56,17 @@ public class unitInterface : MonoBehaviour {
     }
 
 
-    void highlight1()
+    public void highlight1()
     {
         //change colour and bobble ears
     }
 
-    void highlight2()
+    public void highlight2()
     {
         //change colour and bobble head
     }
 
-    public int id; //will be 0-4 and intruct which position is the home row
+    
 
     public void moveTo(Stone stone)
     {

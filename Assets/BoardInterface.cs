@@ -78,7 +78,7 @@ public class BoardInterface : MonoBehaviour {
         stoneList = new Stone[28];
         for (int i = 0; i < 28; i++)
         {
-            stoneList[i] = new Stone(i, Mathf.Abs(13 - i));
+            stoneList[i] = new Stone(i, Mathf.Abs(13 - i), i);
         }
 
         startStoneP1 = 0;
@@ -90,13 +90,13 @@ public class BoardInterface : MonoBehaviour {
 
         for (int i = 0; i < 4; i++)
         {
-            homeRowP1[i] = new Stone(-1, i);
-            homeRowP2[i] = new Stone(29, i);
+            homeRowP1[i] = new Stone(-1, i, i);
+            homeRowP2[i] = new Stone(29, i, i);
 
             print("homerow: " + i + homeRowP1[i].pos.z);
             isWorking = true;
-            targetRowP1[i] = new Stone(30, i);
-            targetRowP2[i] = new Stone(-2, i);
+            targetRowP1[i] = new Stone(30, i, i);
+            targetRowP2[i] = new Stone(-2, i, i);
 
         }
         print("finished generating stone list");

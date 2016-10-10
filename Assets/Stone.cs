@@ -4,9 +4,10 @@ using System.Collections;
 public class Stone : MonoBehaviour {
     //an invisible stepping stone for the units to navigate by.
     public Vector3 pos;
-    public GameObject occupiedBy;
+    public unitInterface occupiedBy;
+    public int index;
 
-    public Stone(float posX, float posZ)
+    public Stone(float posX, float posZ, int index)
     {
         pos = new Vector3(posX, 0, posZ);
         occupiedBy = null;

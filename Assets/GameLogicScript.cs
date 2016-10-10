@@ -21,47 +21,58 @@ public class GameLogicScript : MonoBehaviour {
 
     public GameObject dice; //this can be a child of the board, but would be nice to access directly
 
-    private string gameMode = "setUp";
-    private string whoseTurn;
-    private string subMode;
+    private int gameMode = 0;
+    private int whoseTurn;
+    private int subMode;
 
-    
+    //gameMode constants
+    const int SETUP = 0;
+    const int TURNS = 1;
+    const int GAMEOVER = 2;
+    //subMode constants
 
-	// Update is called once per frame
-	void Update () {
+    const int STARTING_TURN = 0;
+    const int WAITING_FOR_OKAY = 1;
+    const int WAITING_FOR_ROLL = 2;
+    const int WAITING_FOR_DICE_RESULTS = 3;
+    const int WAITING_FOR_UNIT_SELECTION = 4;
+    // Update is called once per frame
+    void Update () {
         switch (gameMode)
-        {   case "setUp":
+        {   case SETUP:
                 //if we're still setting up, dont want to do anything
                 break;
-            case "turns":
+            case TURNS:
                 switch (subMode)
                 {
-                    case "start turn":
+                    case STARTING_TURN:
                         //tell player it's their turn, wait for okay
-                        subMode = "waiting for okay 1";
+                        //move the camera 
+
+                        subMode = WAITING_FOR_OKAY;
                         break;
-                    case "waiting for okay 1":
+                    case WAITING_FOR_OKAY:
                         if (false) //if player has pressed okay
                         {
                             //close the okay menu
-                            subMode = "waiting for roll";
+                            subMode = WAITING_FOR_ROLL;
                             
                         }
                         break;
-                    case "waiting for roll":
+                    case WAITING_FOR_ROLL:
                         if (false) //if player has shaken the device
                         {
                             //dice.roll();
-                            subMode = "waiting for dice result";
+                            subMode = WAITING_FOR_DICE_RESULTS;
                         }
                         break;
-                    case "waiting for dice result":
+                    case WAITING_FOR_DICE_RESULTS:
                         if (false)//dice.finishedRolling)
                         {
                             //diceResult = dice.getResult();
                             //open instruction window to touch a moveable player
                             //highlightMovablePlayers(diceResult);
-                            subMode = "waiting for unit selection";
+                            subMode = WAITING_FOR_UNIT_SELECTION;
                         }
 
                         break;
@@ -96,19 +107,83 @@ public class GameLogicScript : MonoBehaviour {
 
 
                 break;
-            case "winner":
+            case GAMEOVER:
                 break;
             
         }
 
             
-            
-
-
-
-
-	
+           
 	}
+
+    //unit constants
+
+    const int HOME = 0;
+    const int FEILD = 1; 
+    const int TARGET = 2;
+
+    int highlightMovableUnits(int n)
+    { //return number of movable units
+        int c = 0;
+
+        switch (whoseTurn)
+        {
+            case 1:
+                //if they roll a 6 and start pebble not occupied, highlight all in homerow
+                if (n == 6 && !boardInterface.stoneList[boardInterface.startStoneP1].occupiedBy)
+                {
+                    foreach (GameObject unit in unitListP1)
+                    {
+                        unitInterface I = unit.GetComponent<unitInterface>();
+                        if (I.status == HOME)
+                        {
+                            I.highlight1();
+                            c++;
+                        }
+                    }
+                   
+                }
+
+                //Then highlight all movable objects in feild
+                foreach (GameObject unit in unitListP1)
+                {
+                    unitInterface I = unit.GetComponent<unitInterface>();
+                    if (I.status == FEILD)
+                    {  //first, check if they can make it into their target row
+                        int targetIndex = (I.currStone.index + n) % boardInterface.stoneList.Length;
+                        for (int i = 1; i <= n; i++)
+                        {
+                            if(((I.currStone.index + n) % boardInterface.stoneList.Length) == boardInterface.startStoneP1)
+                            { //then they can make it to target and should be highlighted. 
+                              //JESSIE: there's an extra rule that you go into the homerow and 'bounce out' if you dont land exactly, but I'm ignoring that for now.
+                                I.highlight1();
+                                c++;
+                            
+                            }
+                        }
+                        if (!(boardInterface.stoneList[targetIndex].occupiedBy.player == whoseTurn))
+                        {
+                            I.highlight1();
+                            c++;
+                        }
+
+
+                    }
+                    
+
+                }
+
+                break;
+            case 2:
+                //TODO similarly for player 2;
+
+                break;
+
+        }
+        return c;
+    }
+
+
 
 
     void setUp()
@@ -141,15 +216,29 @@ public class GameLogicScript : MonoBehaviour {
         unitListP1 = new GameObject[numUnits];
         unitListP2 = new GameObject[numUnits];
 
-        
+        unitInterface I;
         for (int i =0; i< numUnits; i++)
         {
             print("adding units to board" + i);
             unitListP1[i] = Instantiate(unitPrefabP1); //instanceunitPrefabP1
-            unitListP1[i].GetComponent<unitInterface>().setUp();
-            unitListP1[i].GetComponent<unitInterface>().moveTo(boardInterface.homeRowP1[i]);
+            I = unitListP1[i].GetComponent<unitInterface>();
+            I.setUp();
+            I.currStone = boardInterface.homeRowP1[i];
+            I.moveTo(I.currStone);
+            I.player = 1;
+            I.id = i;
 
-            //unitListP2[i] = Instantiate(unitPrefabP2);
+            unitListP2[i] = Instantiate(unitPrefabP2);
+
+            I = unitListP2[i].GetComponent<unitInterface>();
+            I.setUp();
+            I.currStone = boardInterface.homeRowP2[i];
+            I.moveTo(I.currStone);
+            I.player = 1;
+            I.id = i;
+
+            
+
         }
 
         //add units to the unit lists of player 1 and 2
