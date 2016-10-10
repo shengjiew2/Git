@@ -14,10 +14,19 @@ public class GameLogicScript : MonoBehaviour {
 
 
     public GameObject board;
-    
+    public BoardInterface boardInterface; 
+
+    public GameObject unitPrefabP1;
+    public GameObject unitPrefabP2;
+
+    public GameObject dice; //this can be a child of the board, but would be nice to access directly
 
     private string gameMode = "setUp";
+    private string whoseTurn;
+    private string subMode;
+
     
+
 	// Update is called once per frame
 	void Update () {
         switch (gameMode)
@@ -25,6 +34,47 @@ public class GameLogicScript : MonoBehaviour {
                 //if we're still setting up, dont want to do anything
                 break;
             case "turns":
+                switch (subMode)
+                {
+                    case "start turn":
+                        //tell player it's their turn, wait for okay
+                        subMode = "waiting for okay 1";
+                        break;
+                    case "waiting for okay 1":
+                        if (false) //if player has pressed okay
+                        {
+                            //close the okay menu
+                            subMode = "waiting for roll";
+                            
+                        }
+                        break;
+                    case "waiting for roll":
+                        if (false) //if player has shaken the device
+                        {
+                            //dice.roll();
+                            subMode = "waiting for dice result";
+                        }
+                        break;
+                    case "waiting for dice result":
+                        if (false)//dice.finishedRolling)
+                        {
+                            //diceResult = dice.getResult();
+                            //open instruction window to touch a moveable player
+                            //highlightMovablePlayers(diceResult);
+                            subMode = "waiting for unit selection";
+                        }
+
+                        break;
+
+                        
+                    
+                     
+                        
+                }
+
+
+
+
                 //tell player to roll dice
                 //understand that player has pressed okay
                 //wait for player to roll dice
@@ -63,10 +113,50 @@ public class GameLogicScript : MonoBehaviour {
 
     void setUp()
     {
+
+        //adBoard(); //NOT HERE//do this manually (drag board object to attribute)
+        boardInterface = board.GetComponent<BoardInterface>();
+        boardInterface.isWorking = false;
+        boardInterface.generateStoneLists();
+       
+        print("A " + boardInterface.isWorking);
         
-        addBoard();
-        addCharactersToBoard();
+        addUnitsToBoard();
+
+        //set up all interface/instruction panels, but make them inactive
         
+    }
+    public GameObject[] unitListP1;
+    public GameObject[] unitListP2;
+    public const int numUnits = 4; //each
+
+
+    void addUnitsToBoard()
+    {
+
+        print(boardInterface.isWorking);
+        print("B " + boardInterface.homeRowP1[0].pos.x);
+        //create units and put them on the homeRow
+        print("adding units to board");
+        unitListP1 = new GameObject[numUnits];
+        unitListP2 = new GameObject[numUnits];
+
+        
+        for (int i =0; i< numUnits; i++)
+        {
+            print("adding units to board" + i);
+            unitListP1[i] = Instantiate(unitPrefabP1); //instanceunitPrefabP1
+            unitListP1[i].GetComponent<unitInterface>().setUp();
+            unitListP1[i].GetComponent<unitInterface>().moveTo(boardInterface.homeRowP1[i]);
+
+            //unitListP2[i] = Instantiate(unitPrefabP2);
+        }
+
+        //add units to the unit lists of player 1 and 2
+        //these units should have colour settings depending on which player they belong to 
+        //and should have a position based on the board's homerow list for eah player
+
+        //use a loop to create many instances of the unitPrefab public atrribute 
     }
 
     /*
@@ -83,7 +173,7 @@ public class GameLogicScript : MonoBehaviour {
     has result attibe
     sends dice answer message to main script
 
-
+    */
 
 
    
